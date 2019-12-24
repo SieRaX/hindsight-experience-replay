@@ -18,17 +18,23 @@ class actor(nn.Module):
         self.action_out = nn.Linear(256, env_params['action'])
 
     def forward(self, x):
+        # print("------------------")
+        # print(x)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
-        actions = self.max_action * torch.tanh(self.action_out(x))
+        # print(x)
+        # print(torch.tanh(self.action_out(x)))
+        actions = self.max_action.item() * torch.tanh(self.action_out(x))
 
         return actions
 
 class critic(nn.Module):
     def __init__(self, env_params):
         super(critic, self).__init__()
-        self.max_action = env_params['action_max']
+        # print("models.py/critic: ", env_params['action_max'])
+        # self.max_action = env_params['action_max']
+        self.max_action = torch.Tensor([env_params['action_max']])
         self.fc1 = nn.Linear(env_params['obs'] + env_params['goal'] + env_params['action'], 256)
         self.fc2 = nn.Linear(256, 256)
         self.fc3 = nn.Linear(256, 256)
